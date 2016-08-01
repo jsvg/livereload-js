@@ -404,8 +404,8 @@
       this.log("LiveReload received reload request: " + (JSON.stringify(message, null, 2)));
       return this.reloader.reload(message.path, {
         liveCSS: (_ref = message.liveCSS) != null ? _ref : true,
-        liveJS: (_ref = message.liveCSS) != null ? _ref : true,
         liveImg: (_ref1 = message.liveImg) != null ? _ref1 : true,
+        liveJS: (_ref2 = message.liveJS) != null ? _ref2 : true,
         originalPath: message.originalPath || '',
         overrideURL: message.overrideURL || '',
         serverURL: "http://" + this.options.host + ":" + this.options.port
@@ -789,10 +789,24 @@
     Reloader.prototype.reloadPage = function() {
       return this.window.document.location.reload();
     };
+
     Reloader.prototype.reloadJavascript = function (path) {
-      // TODO: check for component
-      window.devtools.service('hot-reload').trigger('newChanges', path);
-      // NOTE: for now always returning true.
+      window.runningTests = true; //to prevent the app.create from running 2x
+      //remove the dummy script tag ...
+      var tags = document.getElementsByTagName('script');
+      for (var i = tags.length; i >= 0; i--){ //search backwards within nodelist for matching elements to remove
+       if (tags[i] && tags[i].getAttribute('src') != null && tags[i].getAttribute('src').indexOf('dummy') != -1)
+        tags[i].parentNode.removeChild(tags[i]);
+      }
+      //append a new one w/ the latest code
+      var script = document.createElement('script');
+      script.onload = function() {
+        window.runningTests = false;
+        window.devtools.service('hot-reload').trigger('newChanges', path);
+      };
+      script.type = 'text/javascript';
+      script.src = '/assets/dummy.js';
+      document.body.appendChild(script);
       return true;
     };
 

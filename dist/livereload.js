@@ -801,7 +801,11 @@
       //append a new one w/ the latest code
       var script = document.createElement('script');
       script.onload = function() {
-        window.devtools.service('hot-reload').trigger('newChanges', path);
+        //need a true waitTillLoaded function like the css one in here
+        window.setTimeout(function() {
+          window.runningTests = false;
+          window.devtools.service('hot-reload').trigger('newChanges', path);
+        }, 3000);
       }
       script.type = 'text/javascript';
       script.src = '/assets/dummy.js';

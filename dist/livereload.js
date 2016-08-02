@@ -800,9 +800,12 @@
       }
       //append a new one w/ the latest code
       var script = document.createElement('script');
-      script.onload = function() {
-        window.runningTests = false;
-        window.devtools.service('hot-reload').trigger('newChanges', path);
+      script.async = true;
+      script.onreadystatechange = script.onload = function() {
+        if (!callback.done && (!script.readyState || /loaded|complete/.test(script.readyState))) {
+          window.runningTests = false;
+          window.devtools.service('hot-reload').trigger('newChanges', path);
+        }
       };
       script.type = 'text/javascript';
       script.src = '/assets/dummy.js';

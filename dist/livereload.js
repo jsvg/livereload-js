@@ -770,7 +770,7 @@
         }
       }
       if (options.liveJS) {
-        if (path.match(/\.js$/i)) {
+        if (path.match(/\.(js||hbs)$/i)) {
           // debugger; //do something w/ the path here
           if (this.reloadJavascript(path)) {
             return;

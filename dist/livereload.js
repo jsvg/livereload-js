@@ -774,7 +774,7 @@
           return;
         }
       }
-      return this.reloadPage();
+      return this.reloadPage(path);
     };
 
     Reloader.prototype.reloadPage = function() {
